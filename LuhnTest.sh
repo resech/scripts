@@ -41,6 +41,7 @@ if luhn_validate "$card_number"; then
 		exit
 	else
 		printf "Card Brand: "; echo $BINLIST_OUT | xmllint --xpath "string(//Brand)" - ; echo ""
+		printf "Country: "; echo $BINLIST_OUT | xmllint --xpath "string(//CountryName)" - ; echo ""
 		printf "Issuing Bank: "; echo $BINLIST_OUT | xmllint --xpath "string(//Bank)" - ; echo ""
 		printf "Card Type: "; echo $BINLIST_OUT | xmllint --xpath "string(//CardType)" - ; echo ""
 	fi
