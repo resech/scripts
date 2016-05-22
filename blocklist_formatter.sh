@@ -19,7 +19,6 @@ function list_format # Expects one  argument
 {
 	URL=$1
 	BLOCKLIST=$(wget -qO- $URL)
-#	OUTPUT=$(grep -v '^;' <<< "$BLOCKLIST" | egrep -oe '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/[0-9]{1,2}')
 	OUTPUT=$(grep -v -E '^;|^#|^//' <<< "$BLOCKLIST" | egrep -oe '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
 	echo $OUTPUT
 }
