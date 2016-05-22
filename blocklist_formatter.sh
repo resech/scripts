@@ -1,38 +1,42 @@
 #!/bin/bash
 
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
-cd /tmp
+# Set the Desired Output Location
+FILELOCATION="/tmp"
 
-#Download the Blocklists
-wget http://feeds.dshield.org/block.txt -O dshield.txt
-wget http://www.spamhaus.org/drop/edrop.lasso -O SpamHaus_edrop.txt
-wget http://www.spamhaus.org/drop/drop.lasso -O SpamHaus_drop.txt
-wget https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt -O emerging_threats.txt
-wget https://malc0de.com/bl/IP_Blacklist.txt -O malcode.txt
-wget "https://feodotracker.abuse.ch/blocklist/?download=ipblocklist" -O feodo.txt
-wget "https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist" -O zeus.txt
-wget "https://palevotracker.abuse.ch/blocklists.php?download=ipblocklist" -O palevo.txt
-wget http://www.malwaredomainlist.com/hostslist/ip.txt -O malware_domain.txt
+# Blocklist Variables
+DSHIELD="http://feeds.dshield.org/block.txt"
+SPAMDROP="http://www.spamhaus.org/drop/edrop.lasso"
+SPAMEDROP="http://www.spamhaus.org/drop/drop.lasso"
+EMERGING="https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt"
+MALCODE="https://malc0de.com/bl/IP_Blacklist.txt"
+FEODO="https://feodotracker.abuse.ch/blocklist/?download=ipblocklist"
+ZEUS="https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist"
+PALEVO="https://palevotracker.abuse.ch/blocklists.php?download=ipblocklist"
+MALWAREDOMAIN="http://www.malwaredomainlist.com/hostslist/ip.txt"
+RANSOM="https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt"
 
-#Format blocklists to the ESM format and move it to the sftp root
-cat dshield.txt | grep -v '^#' | egrep -i '[0-9]{1,3}' | cut -d$'\t' -f1,3 --output-delimiter '/' > /srv/blocklists/dshield.txt
-cat SpamHaus_drop.txt | grep -v '^;' | egrep -oe '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/[0-9]{1,2}' > /srv/blocklists/spamhaus_drop.txt
-cat SpamHaus_edrop.txt | grep -v '^;' | egrep -oe '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/[0-9]{1,2}' > /srv/blocklists/spamhaus_edrop.txt
-cat emerging_threats.txt | grep -v '^#' | egrep -e '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}' > /srv/blocklists/emerging_threats.txt
-cat malcode.txt | grep -v '^//' | egrep -e '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}' > /srv/blocklists/malcode.txt
-cat malware_domain.txt | egrep -e '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}' > /srv/blocklists/malware_domain.txt
-cat zeus.txt | grep -v '^#' | egrep -e '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}' > /srv/blocklists/zeus_palevo_feodo.txt
-cat feodo.txt | grep -v '^#' | egrep -e '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}' >> /srv/blocklists/zeus_palevo_feodo.txt
-cat palevo.txt | grep -v '^#' | egrep -e '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}' >> /srv/blocklists/zeus_palevo_feodo.txt
+function list_format # Expects one  argument
+{
+	URL=$1
+	BLOCKLIST=$(wget -qO- $URL)
+#	OUTPUT=$(grep -v '^;' <<< "$BLOCKLIST" | egrep -oe '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/[0-9]{1,2}')
+	OUTPUT=$(grep -v -E '^;|^#|^//' <<< "$BLOCKLIST" | egrep -oe '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
+	echo $OUTPUT
+}
 
-#Cleanup
-chmod 644 /srv/blocklists/*
-rm /tmp/dshield.txt
-rm /tmp/SpamHaus_edrop.txt
-rm /tmp/SpamHaus_drop.txt
-rm /tmp/emerging_threats.txt
-rm /tmp/malcode.txt
-rm /tmp/malware_domain.txt
-rm /tmp/feodo.txt
-rm /tmp/zeus.txt
-rm /tmp/palevo.txt
+
+
+#DSHIELD is really unique, instead of creating a distinct function, I just do it all off one line
+DSHIELD_OUT=$(wget -qO- $DSHIELD | grep -v '^#' | egrep -i '[0-9]{1,3}' | cut -d$'\t' -f1,3 --output-delimiter '/'); echo $DSHIELD_OUT | tr " " "\n" > $FILELOCATION/DSHIELD.txt
+
+#Call and format the other lists
+SPAMDROP_OUT=$(list_format "$SPAMDROP"); echo $SPAMDROP_OUT | tr " " "\n" > $FILELOCATION/SPAMDROP.txt
+SPAMEDROP_OUT=$(list_format "$SPAMEDROP"); echo $SPAMEDROP_OUT | tr " " "\n" > $FILELOCATION/SPAMEDROP.txt
+EMERGING_OUT=$(list_format "$EMERGING"); echo $EMERGING_OUT | tr " " "\n" > $FILELOCATION/EMERGING.txt
+MALCODE_OUT=$(list_format "$MALCODE"); echo $MALCODE_OUT | tr " " "\n" > $FILELOCATION/MALCODE.txt
+FEODO_OUT=$(list_format "$FEODO"); echo $FEODO_OUT | tr " " "\n" > $FILELOCATION/FEODO.txt
+ZEUS_OUT=$(list_format "$ZEUS"); echo $ZEUS_OUT | tr " " "\n" > $FILELOCATION/ZEUS.txt
+PALEVO_OUT=$(list_format "$PALEVO"); echo $PALEVO_OUT | tr " " "\n" > $FILELOCATION/PALEVO.txt
+MALWAREDOMAIN_OUT=$(list_format "$MALWAREDOMAIN"); echo $MALWAREDOMAIN_OUT | tr " " "\n" > $FILELOCATION/MALWAREDOMAIN.txt
+RANSOM_OUT=$(list_format "$RANSOM"); echo $RANSOM_OUT | tr " " "\n" > $FILELOCATION/RANSOM.txt
+
