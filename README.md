@@ -30,4 +30,4 @@ Takes a file and XOR key as an argument and then saves a copy of the XOR'd outpu
 
 atd\_rest.py
 ------
-A quick retrevial script that pulls results from Advanced Threat Defense. Depends on an updated atdlib at [atdlib.py](https://github.com/resech/atdlib/blob/MD5results/atdlib.py) until the upstream is updated.
+A quick retrevial script that pulls results from Advanced Threat Defense. Depends on an updated atdlib at [atdlib.py](https://github.com/resech/atdlib/blob/devel/atdlib.py) until the upstream is updated.

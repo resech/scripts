@@ -49,7 +49,7 @@ if args.full:
 		atd.open(args.IP, args.UserName, args.Password)
 		if id_md5:
 			with open('%s_full.zip' % args.md5, 'wb') as rep:
-				rep.write(atd.taskreportmd5(args.md5, 'zip'))
+				rep.write(atd.md5report(args.md5, 'zip'))
 			print "Full results saved as %s_full.zip" % args.md5
 		else:
 			with open('%s_full.zip' % args.taskid, 'wb') as rep:
@@ -67,7 +67,7 @@ if args.pdf:
 		atd.open(args.IP, args.UserName, args.Password)
 		if id_md5:
 			with open('%s.pdf' % args.md5, 'wb') as rep:
-				rep.write(atd.taskreportmd5(args.md5))
+				rep.write(atd.md5report(args.md5))
 			print "Report saved as %s.pdf" % args.md5
 		else:
 			with open('%s.pdf' % args.taskid, 'wb') as rep:
@@ -84,7 +84,7 @@ if args.original:
 		atd.open(args.IP, args.UserName, args.Password)
 		if id_md5:
 			with open('%s_sample.zip' % args.md5, 'wb') as rep:
-				rep.write(atd.taskreportmd5(args.md5, 'sample'))
+				rep.write(atd.md5report(args.md5, 'sample'))
 			print "Original sample saved as %s_sample.zip" % args.md5
 		else:
 			with open('%s_sample.zip' % args.taskid, 'wb') as rep:
