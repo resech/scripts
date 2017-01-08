@@ -4,8 +4,7 @@ import argparse
 import logging
 
 # Depends on updated atdlib for API calls
-# available at https://github.com/resech/atdlib/blob/MD5results/atdlib.py
-# Original at (pull request pending) at: https://github.com/passimens/atdlib
+# Available at https://github.com/passimens/atdlib
 import atdlib
 
 
