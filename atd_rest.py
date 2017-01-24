@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import json
 
 # Depends on updated atdlib for API calls
 # Available at https://github.com/passimens/atdlib
@@ -11,11 +12,16 @@ import atdlib
 #Setup basic loging
 logging.basicConfig()
 
+#Read Creds
+with open('credentials.json') as creds:
+	credentials = json.load(creds)
+
+ip_address = str(credentials['ip_address'])
+username = str(credentials['username'])
+password = str(credentials['password'])
+
 # Grab our Arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("IP", type=str, help="IP Address of ATD")
-parser.add_argument("UserName", type=str, help="The Username ot use")
-parser.add_argument("Password", type=str, help="Password of the user")
 group = parser.add_mutually_exclusive_group()
 group.add_argument("-f", "--full", action="store_true",
 					help="Download the full scan results in one zip file")
@@ -45,7 +51,7 @@ else:
 if args.full:
 	try:
 		atd = atdlib.atdsession()
-		atd.open(args.IP, args.UserName, args.Password)
+		atd.open(ip_address, username, password)
 		if id_md5:
 			with open('%s_full.zip' % args.md5, 'wb') as rep:
 				rep.write(atd.md5report(args.md5, 'zip'))
@@ -63,7 +69,7 @@ if args.full:
 if args.pdf:
 	try:
 		atd = atdlib.atdsession()
-		atd.open(args.IP, args.UserName, args.Password)
+		atd.open(ip_address, username, password)
 		if id_md5:
 			with open('%s.pdf' % args.md5, 'wb') as rep:
 				rep.write(atd.md5report(args.md5))
@@ -80,7 +86,7 @@ if args.pdf:
 if args.original:
 	try:
 		atd = atdlib.atdsession()
-		atd.open(args.IP, args.UserName, args.Password)
+		atd.open(ip_address, username, password)
 		if id_md5:
 			with open('%s_sample.zip' % args.md5, 'wb') as rep:
 				rep.write(atd.md5report(args.md5, 'sample'))
