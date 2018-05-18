@@ -3,7 +3,6 @@
 INSTALLED_DIR="/Users/rsechler/ZAProxy"
 
 CURRENT=`curl -s "https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions.xml" | grep daily-version | awk -v FS="(<daily-version>|</daily-version>)" '{print $2}'`
-INSTALLED=`cat $INSTALLED_DIR/installed.txt`
 
 if [ ! -f $INSTALLED_DIR/installed.txt ]; then
     INSTALLED='0'
